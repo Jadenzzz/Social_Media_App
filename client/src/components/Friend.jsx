@@ -1,4 +1,8 @@
-import { PersonAddOutlined, PersonRemoveOutlined } from "@mui/icons-material";
+import {
+  PersonAddOutlined,
+  PersonRemoveOutlined,
+  MessageOutlined,
+} from "@mui/icons-material";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -64,16 +68,29 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
           </Typography>
         </Box>
       </FlexBetween>
-      <IconButton
-        onClick={() => patchFriend()}
-        sx={{ backgroundColor: primaryLight, p: "0.6rem" }}
-      >
+      <FlexBetween gap={"1rem"}>
         {isFriend ? (
-          <PersonRemoveOutlined sx={{ color: primaryDark }} />
+          <IconButton sx={{ backgroundColor: primaryLight }}>
+            <>
+              <MessageOutlined sx={{ color: primaryDark }}></MessageOutlined>
+            </>
+          </IconButton>
         ) : (
-          <PersonAddOutlined sx={{ color: primaryDark }} />
+          <></>
         )}
-      </IconButton>
+        <IconButton
+          onClick={() => patchFriend()}
+          sx={{ backgroundColor: primaryLight, p: "0.6rem" }}
+        >
+          {isFriend ? (
+            <>
+              <PersonRemoveOutlined sx={{ color: primaryDark }} />
+            </>
+          ) : (
+            <PersonAddOutlined sx={{ color: primaryDark }} />
+          )}
+        </IconButton>
+      </FlexBetween>
     </FlexBetween>
   );
 };
