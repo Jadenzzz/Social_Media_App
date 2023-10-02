@@ -16,8 +16,13 @@ import { createPost } from "./controllers/posts.js";
 import { verifyToken } from "./middleware/auth.js";
 import User from "./models/User.js";
 import Post from "./models/Post.js";
-import { users, posts } from "./data/index.js";
-
+import { users, posts, messageData } from "./data/index.js";
+import http from "http";
+import { Server } from "socket.io";
+import Chat from "./models/Chat.js";
+import Message from "./models/Message.js";
+import { chats } from "./data/index.js";
+import { connectDB } from "./config/db.js";
 /* CONFIGURATIONS */
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -54,16 +59,59 @@ app.use("/posts", postRoutes);
 
 /* MONGOOSE SETUP */
 const PORT = process.env.PORT || 6001;
-mongoose
-  .connect(process.env.MONGO_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    app.listen(PORT, () => console.log(`Server Port: ${PORT}`));
+connectDB();
+const server = app.listen(PORT, () => {
+  console.log(`Server running on ${PORT}`);
+});
+const io = new Server(server, {
+  pingTimeout: 60000,
+  cors: {
+    origin: "http://localhost:3000",
+    // credentials: true,
+  },
+});
 
-    /* ADD DATA ONE TIME */
-    // User.insertMany(users);
-    // Post.insertMany(posts);
-  })
-  .catch((error) => console.log(`${error} did not connect`));
+io.on("connection", (socket) => {
+  console.log("Connected to socket.io");
+  socket.on("setup", (userId) => {
+    socket.join(userId);
+    console.log(userId);
+    socket.emit("connected");
+  });
+
+  socket.on("join chat", (room) => {
+    socket.join(room);
+  });
+});
+// const PORT = process.env.PORT || 6001;
+// mongoose
+//   .connect(process.env.MONGO_URL, {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   })
+//   .then(() => {
+//     const httpServer = http.createServer(app);
+//     const io = new Server(httpServer, {
+//       pingTimeout: 60000,
+//       cors: {
+//         origin: "http://localhost:3000", // Replace with your client's URL
+//         methods: ["GET", "POST"],
+//       },
+//     });
+
+//     io.on("connection", (socket) => {
+//       console.log(`Socket connected: ${socket.id}`);
+
+//       // WebSocket logic
+
+//       socket.on("disconnect", () => {
+//         console.log(`Socket disconnected: ${socket.id}`);
+//       });
+//     });
+//     httpServer.listen(PORT, () => {
+//       // Chat.insertMany(chats);
+//       // Message.insertMany(messageData);
+//       console.log(`Socket.IO server listening on port ${PORT}`);
+//     });
+//   })
+//   .catch((error) => console.log(`${error} did not connect`));

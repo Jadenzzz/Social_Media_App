@@ -72,7 +72,10 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
         {isFriend ? (
           <IconButton sx={{ backgroundColor: primaryLight }}>
             <>
-              <MessageOutlined sx={{ color: primaryDark }}></MessageOutlined>
+              <MessageOutlined
+                onClick={() => navigate(`/chat/${friendId}`)} //navigate to chat page
+                sx={{ color: primaryDark }}
+              ></MessageOutlined>
             </>
           </IconButton>
         ) : (

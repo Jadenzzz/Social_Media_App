@@ -10,7 +10,19 @@ const userIds = [
   new mongoose.Types.ObjectId(),
   new mongoose.Types.ObjectId(),
 ];
-
+const chatIds = [
+  new mongoose.Types.ObjectId(),
+  new mongoose.Types.ObjectId(),
+  new mongoose.Types.ObjectId(),
+];
+const messageIds = [
+  new mongoose.Types.ObjectId(),
+  new mongoose.Types.ObjectId(),
+  new mongoose.Types.ObjectId(),
+  new mongoose.Types.ObjectId(),
+  new mongoose.Types.ObjectId(),
+  new mongoose.Types.ObjectId(),
+];
 export const users = [
   {
     _id: userIds[0],
@@ -281,5 +293,71 @@ export const posts = [
       "Stop it.",
       "Michael, stop it.",
     ],
+  },
+];
+
+export const messageData = [
+  // Messages for Steve & Jane's Chat (chatIds[0])
+  {
+    _id: messageIds[0], // Unique message ID
+    sender: userIds[1],
+    content: "Hey Jane, how's it going?",
+    chat: chatIds[0], // Set the chat ID
+    readBy: [userIds[4]],
+  },
+  {
+    _id: messageIds[1], // Unique message ID
+    sender: userIds[4],
+    content: "Hi Steve, I'm good. How about you?",
+    chat: chatIds[0], // Set the chat ID
+    readBy: [userIds[1]],
+  },
+  {
+    _id: messageIds[2], // Unique message ID
+    sender: userIds[1],
+    content: "I'm doing well too. Anything exciting happening?",
+    chat: chatIds[0], // Set the chat ID
+    readBy: [userIds[4]],
+  },
+  // Messages for Harvey's Chat (chatIds[1])
+  {
+    _id: messageIds[3], // Unique message ID
+    sender: userIds[5],
+    content: "Hey there!",
+    chat: chatIds[1], // Set the chat ID
+    readBy: [userIds[2]],
+  },
+  {
+    _id: messageIds[4], // Unique message ID
+    sender: userIds[2],
+    content: "Hi Harvey!",
+    chat: chatIds[1], // Set the chat ID
+    readBy: [userIds[5]],
+  },
+  {
+    _id: messageIds[5], // Unique message ID
+    sender: userIds[5],
+    content: "What's new?",
+    chat: chatIds[1], // Set the chat ID
+    readBy: [userIds[2]],
+  },
+  // Add more message data as needed
+];
+export const chats = [
+  {
+    _id: chatIds[0],
+    chatName: "Steve & Jane's Chat",
+    isGroupChat: false,
+    users: [userIds[1], userIds[4]],
+    groupAdmin: null, // Since it's not a group chat
+    latestMessage: messageIds[1], // Leave this as null for now
+  },
+  {
+    _id: chatIds[1],
+    chatName: "Harvey's Chat",
+    isGroupChat: false,
+    users: [userIds[5], userIds[2]],
+    groupAdmin: null, // Since it's not a group chat
+    latestMessage: messageIds[5], // Leave this as null for now
   },
 ];
