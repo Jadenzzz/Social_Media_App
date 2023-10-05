@@ -12,6 +12,7 @@ import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/users.js";
 import postRoutes from "./routes/posts.js";
 import chatRoutes from "./routes/chats.js";
+import messagesRoutes from "./routes/messages.js";
 import { register } from "./controllers/auth.js";
 import { createPost } from "./controllers/posts.js";
 import { verifyToken } from "./middleware/auth.js";
@@ -58,6 +59,7 @@ app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/posts", postRoutes);
 app.use("/chats", chatRoutes);
+app.use("/messages", messagesRoutes);
 
 /* MONGOOSE SETUP */
 const PORT = process.env.PORT || 6001;
@@ -67,7 +69,7 @@ const server = app.listen(PORT, () => {
 });
 const io = new Server(server, {
   pingTimeout: 60000,
-  cors: {                                                            
+  cors: {
     origin: "http://localhost:3000",
     // credentials: true,
   },

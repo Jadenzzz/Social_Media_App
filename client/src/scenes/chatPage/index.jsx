@@ -17,6 +17,7 @@ import FlexBetween from "components/FlexBetween";
 import MessagesListWidget from "./widgets/MessagesListWidget";
 import { InputBar } from "./widgets/components/InputBar";
 import { useParams } from "react-router-dom";
+import { setChat, setMessages } from "state";
 
 const END_POINT = "http://localhost:3001";
 var socket, selectedChatCompare;
@@ -32,9 +33,13 @@ const ChatPage = () => {
   const primaryDark = palette.primary.dark;
   const main = palette.neutral.main;
   const medium = palette.neutral.medium;
-  const [chat, setChat] = useState(null);
+  const chat = useSelector((state) => state.chat);
+  const messages = useSelector((state) => state.messages);
   const { friendId } = useParams();
-
+  const [currentMessage, setCurrentMessage] = useState("");
+  const [userMessages, setUserMessages] = useState(null);
+  const [friendMessages, setFriendMessages] = useState(null);
+  const [messageList, setMessageList] = useState([]);
   const accessChat = async () => {
     const access = await fetch(
       `http://localhost:3001/chats/${friendId}/${_id}`,
@@ -48,40 +53,51 @@ const ChatPage = () => {
     );
     const chats = await access.json();
 
-    setChat(chats);
-    console.log(chats._id);
+    dispatch(setChat({ chat: chats }));
     // socket.emit("join chat", selectedChat._id);
   };
 
-  //  const login = async (values, onSubmitProps) => {
-  //    const loggedInResponse = await fetch("http://localhost:3001/auth/login", {
-  //      method: "POST",
-  //      headers: { "Content-Type": "application/json" },
-  //      body: JSON.stringify(values),
-  //    });
-  //    const loggedIn = await loggedInResponse.json();
-  //    onSubmitProps.resetForm();
-  //    if (loggedIn) {
-  //      dispatch(
-  //        setLogin({
-  //          user: loggedIn.user,
-  //          token: loggedIn.token,
-  //        })
-  //      );
-  //      navigate("/home");
-  //    }
-  //  };
+  const fetchMessages = async () => {
+    console.log("fetchMessages");
+    const messages = await fetch(`http://localhost:3001/messages/${chat._id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const messageseList = await messages.json();
+    dispatch(setMessages({ messages: messageseList }));
+    console.log(messageList);
+    // dispatch(setMessages({ messages: messageList }));
 
-  const fetchMessages = async () => {};
+    // socket.emit("join chat", selectedChat._id);
+  };
 
-  const sendMessages = async () => {};
+  // const sendMessages = async () => {
+  //   const messages = await fetch(
+  //     `http://localhost:3001/chats/${_id}/${chat._id}`,
+  //     {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     }
+  //   );
+  //   const messageseList = await messages.json();
+  //   // dispatch(setMessages({ messages: messageList }));
+  // };
 
   const typingHandler = async () => {};
 
   useEffect(() => {
     accessChat();
-    console.log(chat);
+    console.log(chat._id);
   }, []);
+
+  //get updated messages
+  useEffect(() => {
+    //fetchMessages();
+  });
   return (
     <>
       <Box>
@@ -95,6 +111,17 @@ const ChatPage = () => {
             justifyContent={"center"}
           >
             <Box width="30%">
+              <input
+                type="text"
+                value={currentMessage}
+                placeholder="Hey..."
+                onChange={(event) => {
+                  setCurrentMessage(event.target.value);
+                }}
+                // onKeyPress={(event) => {
+                //   event.key === "Enter" && sendMessage();
+                // }}
+              />
               <MessagesListWidget></MessagesListWidget>
             </Box>
             <Box width="70%">

@@ -1,6 +1,6 @@
-import Message from "../models/Message";
-import Chat from "../models/Chat";
-import User from "../models/User";
+import Message from "../models/Message.js";
+import Chat from "../models/Chat.js";
+import User from "../models/User.js";
 
 //@description get all Messages of a chat
 //@params content and chatId
@@ -14,6 +14,26 @@ export const getAllMessages = async (req, res) => {
   } catch (error) {
     res.status(400);
     throw new Error(error.message);
+  }
+};
+
+export const getChatMessages = async (req, res) => {
+  try {
+    const messages = await Message.find({ chat: req.params.chatId })
+      .populate("sender")
+      .populate("chat") // Populate the sender field with user details if needed
+      .sort({ createdAt: 1 }); // Sort messages by createdAt in ascending order
+
+    if (messages.lenght > 0) {
+      res.send(messages);
+    } else {
+      res.send([]);
+    }
+    console.log(messages);
+  } catch (error) {
+    // Handle any errors that occur during the database query
+    console.error("Error fetching chat messages:", error);
+    throw error; // Rethrow the error to handle it at a higher level
   }
 };
 
