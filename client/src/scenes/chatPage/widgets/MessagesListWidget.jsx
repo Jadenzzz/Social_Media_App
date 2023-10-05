@@ -8,7 +8,7 @@ import AdvertWidget from "scenes/widgets/AdvertWidget";
 import FriendListWidget from "scenes/widgets/FriendListWidget";
 import WidgetWrapper from "components/WidgetWrapper";
 
-const MessagesListWidget = (messagesList) => {
+const MessagesListWidget = (userId) => {
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
   const { _id, picturePath } = useSelector((state) => state.user);
 

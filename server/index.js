@@ -11,6 +11,7 @@ import { fileURLToPath } from "url";
 import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/users.js";
 import postRoutes from "./routes/posts.js";
+import chatRoutes from "./routes/chats.js";
 import { register } from "./controllers/auth.js";
 import { createPost } from "./controllers/posts.js";
 import { verifyToken } from "./middleware/auth.js";
@@ -56,6 +57,7 @@ app.post("/posts", verifyToken, upload.single("picture"), createPost);
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/posts", postRoutes);
+app.use("/chats", chatRoutes);
 
 /* MONGOOSE SETUP */
 const PORT = process.env.PORT || 6001;
@@ -65,7 +67,7 @@ const server = app.listen(PORT, () => {
 });
 const io = new Server(server, {
   pingTimeout: 60000,
-  cors: {
+  cors: {                                                            
     origin: "http://localhost:3000",
     // credentials: true,
   },
@@ -81,37 +83,6 @@ io.on("connection", (socket) => {
 
   socket.on("join chat", (room) => {
     socket.join(room);
+    console.log("User joined Room: " + room);
   });
 });
-// const PORT = process.env.PORT || 6001;
-// mongoose
-//   .connect(process.env.MONGO_URL, {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-//   })
-//   .then(() => {
-//     const httpServer = http.createServer(app);
-//     const io = new Server(httpServer, {
-//       pingTimeout: 60000,
-//       cors: {
-//         origin: "http://localhost:3000", // Replace with your client's URL
-//         methods: ["GET", "POST"],
-//       },
-//     });
-
-//     io.on("connection", (socket) => {
-//       console.log(`Socket connected: ${socket.id}`);
-
-//       // WebSocket logic
-
-//       socket.on("disconnect", () => {
-//         console.log(`Socket disconnected: ${socket.id}`);
-//       });
-//     });
-//     httpServer.listen(PORT, () => {
-//       // Chat.insertMany(chats);
-//       // Message.insertMany(messageData);
-//       console.log(`Socket.IO server listening on port ${PORT}`);
-//     });
-//   })
-//   .catch((error) => console.log(`${error} did not connect`));
