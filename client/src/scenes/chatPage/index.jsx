@@ -73,19 +73,19 @@ const ChatPage = () => {
     // socket.emit("join chat", selectedChat._id);
   };
 
-  // const sendMessages = async () => {
-  //   const messages = await fetch(
-  //     `http://localhost:3001/chats/${_id}/${chat._id}`,
-  //     {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //     }
-  //   );
-  //   const messageseList = await messages.json();
-  //   // dispatch(setMessages({ messages: messageList }));
-  // };
+  const sendMessages = async (content) => {
+    const messages = await fetch(
+      `http://localhost:3001/messages/${_id}/${chat._id}/${content}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const messageseList = await messages.json();
+    dispatch(setMessages({ messages: messageList }));
+  };
 
   const typingHandler = async () => {};
 
@@ -96,7 +96,7 @@ const ChatPage = () => {
 
   //get updated messages
   useEffect(() => {
-    //fetchMessages();
+    fetchMessages();
   });
   return (
     <>
@@ -111,17 +111,17 @@ const ChatPage = () => {
             justifyContent={"center"}
           >
             <Box width="30%">
-              <input
-                type="text"
-                value={currentMessage}
-                placeholder="Hey..."
-                onChange={(event) => {
-                  setCurrentMessage(event.target.value);
-                }}
-                // onKeyPress={(event) => {
-                //   event.key === "Enter" && sendMessage();
-                // }}
-              />
+              <div className="chat-footer">
+                <input
+                  type="text"
+                  value={currentMessage}
+                  placeholder="Hey..."
+                  onChange={(event) => {
+                    setCurrentMessage(event.target.value);
+                  }}
+                />
+                <button onClick={sendMessages(currentMessage)}>&#9658;</button>
+              </div>
               <MessagesListWidget></MessagesListWidget>
             </Box>
             <Box width="70%">

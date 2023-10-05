@@ -41,7 +41,9 @@ export const getChatMessages = async (req, res) => {
 //@params content and chatId
 //@return new message and update chat
 export const sendMessage = async (req, res) => {
-  const { content, chatId } = req.body;
+  const userId = req.params.userId;
+  const chatId = req.params.chatId;
+  const content = req.params.content;
 
   if (!content || !chatId) {
     console.log("Invalid data passed into request");
@@ -49,17 +51,18 @@ export const sendMessage = async (req, res) => {
   }
 
   var newMessage = {
-    sender: req.user._id,
+    sender: userId,
     content: content,
     chat: chatId,
   };
 
   try {
     var message = await Message.create(newMessage);
+    console.log("created");
     message = await message.populate("sender").execPopulate();
     message = await message.populate("chat").execPopulate();
 
-    await Chat.findByIdAndUpdate(req.body.chatId, { latestMessage: message });
+    await Chat.findByIdAndUpdate(chatId, { latestMessage: message });
 
     res.json(message);
   } catch (err) {
