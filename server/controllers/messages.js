@@ -24,12 +24,12 @@ export const getChatMessages = async (req, res) => {
       .populate("chat") // Populate the sender field with user details if needed
       .sort({ createdAt: 1 }); // Sort messages by createdAt in ascending order
 
-    if (messages.lenght > 0) {
+    if (messages.length > 0) {
       res.send(messages);
     } else {
       res.send([]);
     }
-    console.log(messages);
+    // console.log(messages);
   } catch (error) {
     // Handle any errors that occur during the database query
     console.error("Error fetching chat messages:", error);
@@ -58,14 +58,15 @@ export const sendMessage = async (req, res) => {
 
   try {
     var message = await Message.create(newMessage);
-    console.log("created");
-    message = await message.populate("sender").execPopulate();
-    message = await message.populate("chat").execPopulate();
+    // console.log("created");
+    message = await message.populate("sender");
+    message = await message.populate("chat");
 
     await Chat.findByIdAndUpdate(chatId, { latestMessage: message });
 
     res.json(message);
   } catch (err) {
     res.status(500).json({ error: err.message });
+    console.log(err.message);
   }
 };

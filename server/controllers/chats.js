@@ -7,8 +7,8 @@ import User from "../models/User.js";
 export const accessChat = async (req, res) => {
   try {
     const userId = req.params._id;
-    console.log(req.params._id);
-    console.log(req.params.friendId);
+    // console.log(req.params._id);
+    // console.log(req.params.friendId);
     if (!userId) {
       console.log("UserId param not sent with request");
       return res.sendStatus(400);
@@ -30,7 +30,6 @@ export const accessChat = async (req, res) => {
 
     if (isChat.length > 0) {
       res.send(isChat[0]);
-      console.log(isChat[0]);
     } else {
       var chatData = {
         chatName: req.params.friendId,
@@ -44,7 +43,7 @@ export const accessChat = async (req, res) => {
           "users"
         );
         res.status(200).json(FullChat);
-        console.log(res);
+        // console.log(res);
       } catch (error) {
         res.status(400);
         throw new Error(error.message);

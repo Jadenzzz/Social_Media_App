@@ -20,7 +20,7 @@ import { useParams } from "react-router-dom";
 import { setChat, setMessages } from "state";
 
 const END_POINT = "http://localhost:3001";
-var socket, selectedChatCompare;
+var socket;
 
 const ChatPage = () => {
   const dispatch = useDispatch();
@@ -40,6 +40,11 @@ const ChatPage = () => {
   const [userMessages, setUserMessages] = useState(null);
   const [friendMessages, setFriendMessages] = useState(null);
   const [messageList, setMessageList] = useState([]);
+
+  const joinChat = () => {
+    socket.emit("join chat", chat._id);
+  };
+
   const accessChat = async () => {
     const access = await fetch(
       `http://localhost:3001/chats/${friendId}/${_id}`,
@@ -54,6 +59,9 @@ const ChatPage = () => {
     const chats = await access.json();
 
     dispatch(setChat({ chat: chats }));
+
+    //join socket room
+    joinChat();
     // socket.emit("join chat", selectedChat._id);
   };
 
@@ -65,16 +73,16 @@ const ChatPage = () => {
         "Content-Type": "application/json",
       },
     });
-    const messageseList = await messages.json();
-    dispatch(setMessages({ messages: messageseList }));
+    const messageList = await messages.json();
     console.log(messageList);
+    dispatch(setMessages({ messages: messageList }));
     // dispatch(setMessages({ messages: messageList }));
 
     // socket.emit("join chat", selectedChat._id);
   };
 
   const sendMessages = async (content) => {
-    const messages = await fetch(
+    const newMessages = await fetch(
       `http://localhost:3001/messages/${_id}/${chat._id}/${content}`,
       {
         method: "POST",
@@ -83,20 +91,27 @@ const ChatPage = () => {
         },
       }
     );
-    const messageseList = await messages.json();
-    dispatch(setMessages({ messages: messageList }));
+    const mes = await newMessages.json();
+    console.log(mes);
+    socket.emit("send message", JSON.stringify(mes));
   };
 
-  const typingHandler = async () => {};
-
   useEffect(() => {
+    socket = io(END_POINT);
+    socket.emit("setup", _id);
+    setChat(chat._id);
     accessChat();
-    console.log(chat._id);
+    fetchMessages();
   }, []);
 
   //get updated messages
   useEffect(() => {
-    fetchMessages();
+    socket.on("message received", (newMessageReceived) => {
+      console.log("received: " + newMessageReceived);
+      newMessageReceived = JSON.parse(newMessageReceived);
+      setMessages({ messages: [...messages, newMessageReceived] });
+      console.log(messages);
+    });
   });
   return (
     <>
@@ -120,7 +135,9 @@ const ChatPage = () => {
                     setCurrentMessage(event.target.value);
                   }}
                 />
-                <button onClick={sendMessages(currentMessage)}>&#9658;</button>
+                <button onClick={() => sendMessages(currentMessage)}>
+                  &#9658;
+                </button>
               </div>
               <MessagesListWidget></MessagesListWidget>
             </Box>

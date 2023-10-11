@@ -65,7 +65,7 @@ app.use("/messages", messagesRoutes);
 const PORT = process.env.PORT || 6001;
 connectDB();
 const server = app.listen(PORT, () => {
-  console.log(`Server running on ${PORT}`);
+  // console.log(`Server running on ${PORT}`);
 });
 const io = new Server(server, {
   pingTimeout: 60000,
@@ -76,15 +76,30 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  console.log("Connected to socket.io");
+  console.log("Connected to socket.io" + socket.id);
+
   socket.on("setup", (userId) => {
     socket.join(userId);
-    console.log(userId);
+    console.log("User joined their own room");
+    // console.log(userId);
     socket.emit("connected");
   });
 
   socket.on("join chat", (room) => {
     socket.join(room);
     console.log("User joined Room: " + room);
+  });
+
+  socket.on("send message", (data) => {
+    const JSONdata = JSON.parse(data);
+    var chat = JSONdata.chat;
+    console.log("socket" + data);
+    if (!chat.users) return console.log("chat.users not defined");
+
+    chat.users.forEach((user) => {
+      if (user._id == JSONdata.sender._id) return;
+      var message = JSON.stringify(JSONdata);
+      socket.in(user._id).emit("message received", message);
+    });
   });
 });
