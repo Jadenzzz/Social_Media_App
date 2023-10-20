@@ -7,8 +7,6 @@ import User from "../models/User.js";
 export const accessChat = async (req, res) => {
   try {
     const userId = req.params._id;
-    // console.log(req.params._id);
-    // console.log(req.params.friendId);
     if (!userId) {
       console.log("UserId param not sent with request");
       return res.sendStatus(400);

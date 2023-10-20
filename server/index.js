@@ -65,6 +65,8 @@ app.use("/messages", messagesRoutes);
 const PORT = process.env.PORT || 6001;
 connectDB();
 const server = app.listen(PORT, () => {
+  // Chat.insertMany(chats);
+  // Message.insertMany(messageData);
   // console.log(`Server running on ${PORT}`);
 });
 const io = new Server(server, {
@@ -91,15 +93,13 @@ io.on("connection", (socket) => {
   });
 
   socket.on("send message", (data) => {
-    const JSONdata = JSON.parse(data);
-    var chat = JSONdata.chat;
-    console.log("socket" + data);
+    var chat = data.chat;
     if (!chat.users) return console.log("chat.users not defined");
 
     chat.users.forEach((user) => {
-      if (user._id == JSONdata.sender._id) return;
-      var message = JSON.stringify(JSONdata);
-      socket.in(user._id).emit("message received", message);
+      console.log("socket: " + user);
+      if (user == data.sender._id) return;
+      socket.in(user).emit("message received", data);
     });
   });
 });
